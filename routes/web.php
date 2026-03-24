@@ -23,7 +23,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // User Routes
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/dashboard', \App\Livewire\User\Dashboard::class)->name('dashboard');
+    Route::get('/setoran', \App\Livewire\User\SubmissionList::class)->name('setoran.index');
     Route::get('/setoran/buat', \App\Livewire\User\CreateSubmission::class)->name('setoran.create');
+    Route::get('/hadiah', \App\Livewire\User\RewardCatalog::class)->name('hadiah.index');
+    Route::get('/penukaran', \App\Livewire\User\RedemptionList::class)->name('penukaran.index');
+    Route::get('/poin', \App\Livewire\User\PointHistory::class)->name('poin.index');
+    
     Route::view('profile', 'profile')->name('profile');
 });
 
