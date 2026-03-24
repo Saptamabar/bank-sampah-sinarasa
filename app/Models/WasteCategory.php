@@ -19,4 +19,9 @@ class WasteCategory extends Model
         'points_per_unit' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+
+    public function wasteSubmissionItems()
+    {
+        return $this->hasMany(WasteSubmissionItem::class);
+    }
 }

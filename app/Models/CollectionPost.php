@@ -25,4 +25,10 @@ class CollectionPost extends Model
         'longitude' => 'decimal:7',
         'is_active' => 'boolean',
     ];
+
+    
+    public function wasteSubmissions()
+    {
+        return $this->hasMany(WasteSubmission::class);
+    }
 }
