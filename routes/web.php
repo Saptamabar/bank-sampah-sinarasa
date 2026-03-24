@@ -2,9 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', \App\Livewire\Public\LandingPage::class)->name('home');
+
+// Public Routes
+Route::get('/berita', \App\Livewire\Public\NewsList::class)->name('news.index');
+Route::get('/berita/{slug}', \App\Livewire\Public\NewsDetail::class)->name('news.show');
+Route::get('/peta', \App\Livewire\Public\MapPage::class)->name('map');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
