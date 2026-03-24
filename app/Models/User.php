@@ -20,6 +20,15 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'nik',
+        'phone',
+        'address',
+        'rt',
+        'rw',
+        'photo',
+        'role',
+        'points_total',
+        'is_active',
     ];
 
     /**
@@ -42,6 +51,27 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    public function wasteSubmissions()
+    {
+        return $this->hasMany(WasteSubmission::class);
+    }
+
+    public function redemptions()
+    {
+        return $this->hasMany(Redemption::class);
+    }
+
+    public function pointTransactions()
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
+    public function news()
+    {
+        return $this->hasMany(News::class, 'author_id');
     }
 }
