@@ -5,10 +5,8 @@
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100">
         <div class="p-6 text-gray-900">
-            <!-- Header Actions -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 pb-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
-                    <!-- Search -->
                     <div class="relative w-full sm:w-64">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -17,26 +15,22 @@
                         </div>
                         <input wire:model.live.debounce.300ms="search" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full pl-10 p-2.5" placeholder="Cari nama, NIK, email...">
                     </div>
-                    
-                    <!-- Filter Status -->
+
                     <select wire:model.live="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full sm:w-auto p-2.5">
                         <option value="">Semua Status</option>
                         <option value="active">Aktif</option>
                         <option value="inactive">Nonaktif (Menunggu)</option>
                     </select>
                 </div>
-                
-                <!-- Add User Button -->
+
                 <div>
-                    <!-- Link to UserForm page mapping to /admin/pengguna/buat, but we haven't created it yet. Let's make it alert for now or link to the route if we defined it. -->
-                    <button onclick="alert('Fitur tambah pengguna manual akan segera hadir.')" type="button" class="inline-flex items-center px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors focus:ring-4 focus:ring-brand/30">
+                    <button wire:click="create" type="button" class="inline-flex items-center px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors focus:ring-4 focus:ring-brand/30">
                         <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Tambah Nasabah
                     </button>
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="overflow-x-auto mt-4">
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
@@ -63,8 +57,8 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="text-gray-900">{{ $user->phone }}</div>
-                                    <div class="text-xs text-gray-500 truncate max-w-[200px]" title="{{ $user->address }}, RT {{ $user->rt }}/RW {{ $user->rw }}">{{ $user->address }}, RT {{ $user->rt }}/RW {{ $user->rw }}</div>
+                                    <div class="text-gray-900">{{ $user->phone ?? '-' }} <span class="text-xs text-gray-500 block">{{ $user->email }}</span></div>
+                                    <div class="text-xs text-gray-500 truncate max-w-[200px]" title="{{ $user->address }}, RT {{ $user->rt }}/RW {{ $user->rw }}">{{ $user->address ?? 'Alamat belum diisi' }} {{ $user->rt ? ', RT '.$user->rt : '' }}{{ $user->rw ? '/RW '.$user->rw : '' }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="font-semibold text-brand-dark">{{ number_format($user->points_total, 0, ',', '.') }}</div>
@@ -78,7 +72,6 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex justify-end gap-2" x-data="{ openDeleteModal: false }">
-                                        <!-- Toggle Status Button -->
                                         <button wire:click="toggleActive({{ $user->id }})" wire:loading.attr="disabled" wire:target="toggleActive({{ $user->id }})"
                                             class="inline-flex items-center p-1.5 rounded-lg border {{ $user->is_active ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50' }}"
                                             title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
@@ -89,12 +82,14 @@
                                             @endif
                                         </button>
 
-                                        <!-- Delete Button -->
+                                        <button wire:click="edit({{ $user->id }})" class="inline-flex items-center p-1.5 rounded-lg border border-blue-200 text-blue-600 hover:bg-blue-50" title="Edit">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+
                                         <button @click="openDeleteModal = true" class="inline-flex items-center p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200" title="Hapus">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
 
-                                        <!-- Delete Confirmation Modal (Alpine) -->
                                         <div x-show="openDeleteModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                                             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                                                 <div x-show="openDeleteModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="openDeleteModal = false" aria-hidden="true"></div>
@@ -142,4 +137,80 @@
             </div>
         </div>
     </div>
+
+    @if ($isModalOpen)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="$set('isModalOpen', false)" aria-hidden="true"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="inline-block align-bottom bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle max-w-2xl w-full">
+                    <form wire:submit.prevent="save">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[80vh] overflow-y-auto">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6 font-heading border-b pb-2" id="modal-title">{{ $userId ? 'Edit' : 'Tambah' }} Data Nasabah</h3>
+
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <x-input-label for="name" value="Nama Lengkap" />
+                                        <x-text-input wire:model="name" id="name" type="text" class="mt-1 block w-full" placeholder="Nama Nasabah" required />
+                                        <x-input-error :messages="$errors->get('name')" class="mt-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <x-input-label for="nik" value="Nomor Induk Kependudukan (NIK)" />
+                                        <x-text-input wire:model="nik" id="nik" type="text" class="mt-1 block w-full" placeholder="16 Digit NIK" required />
+                                        <x-input-error :messages="$errors->get('nik')" class="mt-1 text-xs" />
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <x-input-label for="email" value="Alamat Email" />
+                                        <x-text-input wire:model="email" id="email" type="email" class="mt-1 block w-full" placeholder="email@contoh.com" required />
+                                        <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <x-input-label for="phone" value="No. HP / WhatsApp" />
+                                        <x-text-input wire:model="phone" id="phone" type="text" class="mt-1 block w-full" placeholder="08xxxxxxxxxx" />
+                                        <x-input-error :messages="$errors->get('phone')" class="mt-1 text-xs" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <x-input-label for="address" value="Alamat Domisili" />
+                                    <x-text-input wire:model="address" id="address" type="text" class="mt-1 block w-full" placeholder="Nama Jalan / Dusun" />
+                                    <x-input-error :messages="$errors->get('address')" class="mt-1 text-xs" />
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <x-input-label for="rt" value="RT" />
+                                        <x-text-input wire:model="rt" id="rt" type="text" class="mt-1 block w-full" placeholder="001" />
+                                        <x-input-error :messages="$errors->get('rt')" class="mt-1 text-xs" />
+                                    </div>
+                                    <div>
+                                        <x-input-label for="rw" value="RW" />
+                                        <x-text-input wire:model="rw" id="rw" type="text" class="mt-1 block w-full" placeholder="002" />
+                                        <x-input-error :messages="$errors->get('rw')" class="mt-1 text-xs" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <x-input-label for="password" value="Password Akun" />
+                                    <x-text-input wire:model="password" id="password" type="password" class="mt-1 block w-full" placeholder="Minimal 8 karakter" />
+                                    <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs" />
+                                    @if($userId)
+                                        <p class="mt-1 text-xs text-gray-500">Biarkan kosong jika tidak ingin mengubah password.</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
+                            <button type="submit" wire:loading.attr="disabled" wire:target="save" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-brand text-base font-medium text-white hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand sm:ml-3 sm:w-auto sm:text-sm">Simpan</button>
+                            <button type="button" wire:click="$set('isModalOpen', false)" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
