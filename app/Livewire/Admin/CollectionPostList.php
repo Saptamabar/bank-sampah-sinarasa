@@ -17,37 +17,37 @@ class CollectionPostList extends Component
     public $search = '';
 
     public $postId = null;
-    
+
     #[Validate('required|string|max:255')]
     public $name = '';
-    
+
     #[Validate('required|string|max:255')]
     public $address = '';
-    
+
     #[Validate('required|string|max:5')]
     public $rt = '';
-    
+
     #[Validate('required|string|max:5')]
     public $rw = '';
-    
+
     #[Validate('required|numeric')]
-    public $latitude = -8.1000;
-    
+    public $latitude = -8.2041451;
+
     #[Validate('required|numeric')]
-    public $longitude = 113.7500;
-    
+    public $longitude = 113.8285047;
+
     #[Validate('required|string|max:255')]
     public $pic_name = '';
-    
-    #[Validate('required|string|max:20')]
+
+    #[Validate('required|string|max:20|regex:/^[0-9]+$/')]
     public $pic_phone = '';
-    
+
     #[Validate('nullable|string|max:255')]
     public $operational_hours = '';
-    
+
     #[Validate('nullable|image|max:2048')]
     public $photo;
-    
+
     public $existingPhoto = '';
 
     public $isModalOpen = false;
@@ -57,8 +57,8 @@ class CollectionPostList extends Component
     public function create()
     {
         $this->reset(['postId', 'name', 'address', 'rt', 'rw', 'pic_name', 'pic_phone', 'operational_hours', 'photo', 'existingPhoto']);
-        $this->latitude = -8.1000;
-        $this->longitude = 113.7500;
+        $this->latitude = -8.2041451;
+        $this->longitude = 113.8285047;
         $this->resetValidation();
         $this->isModalOpen = true;
     }
@@ -78,7 +78,7 @@ class CollectionPostList extends Component
         $this->operational_hours = $post->operational_hours;
         $this->existingPhoto = $post->photo;
         $this->photo = null;
-        
+
         $this->resetValidation();
         $this->isModalOpen = true;
     }
@@ -129,7 +129,7 @@ class CollectionPostList extends Component
             $this->dispatch('flash', type: 'error', message: 'Tidak dapat menghapus pos yang memiliki riwayat setoran!');
             return;
         }
-        
+
         $post->delete();
         $this->dispatch('flash', type: 'success', message: 'Pos berhasil dihapus.');
     }

@@ -18,7 +18,7 @@
                         <input wire:model.live.debounce.300ms="search" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand focus:border-brand block w-full pl-10 p-2.5" placeholder="Cari nama pos, alamat, PIC...">
                     </div>
                 </div>
-                
+
                 <!-- Add Button -->
                 <div>
                     <button wire:click="create" type="button" class="inline-flex items-center px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors focus:ring-4 focus:ring-brand/30">
@@ -148,19 +148,18 @@
     <!-- Create/Edit Modal directly handled by Livewire & Alpine -->
     @if ($isModalOpen)
         <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true"
-             x-data="{ 
+             x-data="{
                 initMap() {
                     setTimeout(() => {
-                        let lat = @this.latitude || -8.1000;
-                        let lng = @this.longitude || 113.7500;
-                        
-                        let map = L.map('leaflet-map').setView([lat, lng], 14);
+                        let lat = @this.latitude || -8.2041451;
+                        let lng = @this.longitude || 113.8285047;
+                        let map = L.map('leaflet-map').setView([lat, lng], 17);
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             attribution: '&copy; OpenStreetMap contributors'
                         }).addTo(map);
-                        
+
                         let marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-                        
+
                         marker.on('dragend', function(e) {
                             let pos = marker.getLatLng();
                             @this.set('latitude', pos.lat);
@@ -172,7 +171,7 @@
                             @this.set('latitude', e.latlng.lat);
                             @this.set('longitude', e.latlng.lng);
                         });
-                        
+
                         map.invalidateSize();
                     }, 300);
                 }
@@ -184,7 +183,7 @@
                     <form wire:submit.prevent="save">
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[80vh] overflow-y-auto">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6 font-heading border-b pb-2" id="modal-title">{{ $postId ? 'Edit' : 'Tambah' }} Pos Bank Sampah</h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Col 1: Base Info -->
                                 <div class="space-y-4">
@@ -231,13 +230,13 @@
                                         <x-text-input wire:model="operational_hours" id="operational_hours" type="text" placeholder="Cth: Senin - Jumat, 08:00 - 15:00" class="mt-1 block w-full" />
                                         <x-input-error :messages="$errors->get('operational_hours')" class="mt-1 text-xs" />
                                     </div>
-                                    
+
                                     <div>
                                         <x-input-label for="photo" value="Foto Pos (Opsional)" />
                                         <input wire:model="photo" id="photo" type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-light file:text-brand-dark hover:file:bg-brand-light/80" accept="image/*" />
                                         <div wire:loading wire:target="photo" class="text-sm text-brand mt-1">Mengunggah...</div>
                                         <x-input-error :messages="$errors->get('photo')" class="mt-1 text-xs" />
-                                        
+
                                         @if ($photo)
                                             <div class="mt-2 text-sm text-green-600">Foto baru siap diunggah.</div>
                                         @elseif ($existingPhoto)
@@ -252,10 +251,10 @@
                                 <div class="space-y-4 flex flex-col">
                                     <h4 class="text-sm font-medium text-gray-700">Tentukan Titik Lokasi Peta</h4>
                                     <p class="text-xs text-gray-500 mb-2">Geser penanda (marker) merah pada peta ke lokasi pos yang sesuai, koordinat akan terisi secara otomatis.</p>
-                                    
+
                                     <!-- Map Container -->
                                     <div wire:ignore class="h-64 md:h-full min-h-[300px] w-full bg-gray-100 rounded-lg border border-gray-300 relative z-0" id="leaflet-map"></div>
-                                    
+
                                     <div class="grid grid-cols-2 gap-4 mt-4">
                                         <div>
                                             <x-input-label for="latitude" value="Latitude" />
