@@ -23,21 +23,21 @@
     <body class="font-sans antialiased text-gray-900 bg-gray-50 flex h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
 
         <!-- Sidebar Backdrop (Mobile) -->
-        <div x-show="sidebarOpen" 
-             x-transition:enter="transition-opacity ease-linear duration-300" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="transition-opacity ease-linear duration-300" 
-             x-transition:leave-start="opacity-100" 
-             x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 z-40 bg-gray-900/80 lg:hidden" 
-             @click="sidebarOpen = false" 
+        <div x-show="sidebarOpen"
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-40 bg-gray-900/80 lg:hidden"
+             @click="sidebarOpen = false"
              aria-hidden="true" style="display: none;"></div>
 
         <!-- Sidebar -->
         <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-brand-dark text-white flex flex-col transition-transform duration-300 transform lg:translate-x-0 lg:static lg:inset-0"
                :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
-            
+
             <!-- Sidebar Header -->
             <div class="h-16 flex items-center justify-center border-b border-brand/30 px-4">
                 <a href="{{ route('admin.dashboard') }}" class="font-heading font-bold text-xl tracking-wider text-white flex items-center gap-2" wire:navigate>
@@ -63,7 +63,7 @@
                 @endphp
 
                 @foreach ($navItems as $item)
-                    <a href="{{ route($item['route']) }}" 
+                    <a href="{{ route($item['route']) }}"
                        class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs($item['route']) ? 'bg-brand text-white' : 'text-gray-300 hover:bg-brand/50 hover:text-white' }}"
                        wire:navigate>
                         <svg class="flex-shrink-0 w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,10 +92,10 @@
 
         <!-- Main Content Wrapper -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            
+
             <!-- Topbar (Mobile Hamburger & Desktop User Menu) -->
             <header class="bg-white shadow-sm border-b border-gray-100 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10">
-                
+
                 <!-- Mobile menu button -->
                 <button type="button" class="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none" @click="sidebarOpen = true">
                     <span class="sr-only">Open sidebar</span>
@@ -111,9 +111,35 @@
 
                 <!-- Topbar Actions -->
                 <div class="flex items-center gap-4 ml-auto lg:ml-0">
-                    <!-- User Dropdown Menu -> We can reuse Breeze's dropdown here or a simpler one -->
-                    <livewire:layout.navigation />
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="flex items-center gap-2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors">
+                        <span class="text-sm font-medium hidden sm:block">{{ auth()->user()->name }}</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="open"
+                        @click.away="open = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50"
+                        style="display: none;">
+
+                        <a href="{{ route('profile') }}" wire:navigate class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Profil Saya
+                        </a>
+
+                        <button wire:click="logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            Keluar
+                        </button>
+                    </div>
                 </div>
+            </div>
             </header>
 
             <!-- Main Scrollable Content -->
@@ -125,7 +151,7 @@
                             <h1 class="font-heading font-semibold text-2xl text-gray-900">{{ $header }}</h1>
                         </div>
                     @endif
-                    
+
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {{ $slot }}
                     </div>

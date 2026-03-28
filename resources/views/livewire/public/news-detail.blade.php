@@ -13,7 +13,7 @@
             <h1 class="text-3xl font-extrabold text-gray-900 font-heading tracking-tight sm:text-4xl md:text-5xl lg:leading-tight mb-6">
                 {{ $news->title }}
             </h1>
-            
+
             <div class="flex items-center justify-center mt-6">
                 <div class="flex-shrink-0">
                     <div class="h-12 w-12 rounded-full bg-brand-light/20 flex items-center justify-center text-brand font-bold border border-brand/20 shadow-sm">
@@ -36,9 +36,9 @@
 
     <!-- Article Body -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        @if($news->cover_image)
+        @if($news->thumbnail)
             <figure class="mb-10 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                <img class="w-full h-auto object-cover max-h-[500px]" src="{{ Storage::url($news->cover_image) }}" alt="{{ $news->title }}">
+                <img class="w-full h-auto object-cover max-h-[500px]" src="{{ Storage::url($news->thumbnail) }}" alt="{{ $news->title }}">
             </figure>
         @endif
 
@@ -68,13 +68,13 @@
     <div class="bg-gray-50 py-16 border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl font-bold text-gray-900 font-heading mb-8">Berita Terkait Lainnya</h2>
-            
+
             <div class="grid gap-8 lg:grid-cols-3 md:grid-cols-2">
                 @foreach($relatedNews as $related)
                     <div class="flex flex-col rounded-xl shadow-sm border border-gray-100 overflow-hidden bg-white hover:shadow-md transition-shadow group">
                         <div class="flex-shrink-0 relative h-48 bg-gray-200 overflow-hidden">
-                            @if($related->cover_image)
-                                <img class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ Storage::url($related->cover_image) }}" alt="{{ $related->title }}">
+                            @if($related->thumbnail)
+                                <img class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ Storage::url($related->thumbnail) }}" alt="{{ $related->title }}">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-400">
                                     <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>

@@ -29,8 +29,8 @@
             @forelse($news as $article)
                 <div class="flex flex-col rounded-2xl shadow-sm border border-gray-100 overflow-hidden bg-white hover:shadow-lg transition-shadow group">
                     <div class="flex-shrink-0 relative h-56 bg-gray-200 overflow-hidden">
-                        @if($article->cover_image)
-                            <img class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ Storage::url($article->cover_image) }}" alt="{{ $article->title }}">
+                        @if($article->thumbnail)
+                            <img class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ Storage::url($article->thumbnail) }}" alt="{{ $article->title }}">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-400">
                                 <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14"></path></svg>

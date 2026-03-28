@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('content');
             $table->string('thumbnail')->nullable();
-            $table->enum('category', ['berita', 'pengumuman', 'edukasi']);
+            $table->enum('category', ['Berita', 'Pengumuman', 'Edukasi','Promosi']);
             $table->foreignId('author_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();

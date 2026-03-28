@@ -31,8 +31,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/hadiah', \App\Livewire\User\RewardCatalog::class)->name('hadiah.index');
     Route::get('/penukaran', \App\Livewire\User\RedemptionList::class)->name('penukaran.index');
     Route::get('/poin', \App\Livewire\User\PointHistory::class)->name('poin.index');
-    
-    Route::view('profile', 'profile')->name('profile');
-});
+
+    });
+Route::view('profile', 'profile')->name('profile');
 
 require __DIR__.'/auth.php';

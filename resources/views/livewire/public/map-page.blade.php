@@ -1,4 +1,4 @@
-<div>
+<div x-data="mapController" class="relative">
     <div class="bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-4xl font-extrabold text-gray-900 font-heading tracking-tight sm:text-5xl">Peta Jaringan Pos Bank Sampah</h1>
@@ -9,18 +9,19 @@
     </div>
 
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
-        
-        <!-- Sidebar List -->
+
         <div class="w-full lg:w-1/3 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[600px]">
             <div class="p-6 bg-brand text-white border-b border-brand-dark">
                 <h2 class="text-xl font-bold font-heading">Daftar Pos Aktif</h2>
                 <p class="text-brand-light text-sm mt-1">Pilih pos untuk melihat lokasinya di peta.</p>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-0" id="post-list-container">
                 <ul class="divide-y divide-gray-100">
-                    <template x-data x-for="post in {{ $postsJson }}" :key="post.id">
-                        <li class="p-4 hover:bg-gray-50 cursor-pointer transition-colors" @click="$dispatch('focus-post', { id: post.id })">
+                    <template x-for="post in posts" :key="post.id">
+                        <li class="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                            @click="focusPost(post.latitude, post.longitude, post.name)"
+                            :class="{'bg-brand/5 border-l-4 border-brand': activePostId === post.id}">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0 mt-1">
                                     <svg class="w-6 h-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -41,94 +42,64 @@
                         </li>
                     </template>
                 </ul>
-                <div x-data x-show="JSON.parse('{{ $postsJson }}').length === 0" class="p-8 text-center text-gray-500">
+                <div x-show="posts.length === 0" class="p-8 text-center text-gray-500">
                     Belum ada pos bank sampah yang terdaftar.
                 </div>
             </div>
         </div>
 
-        <!-- Map Container -->
-        <div class="w-full lg:w-2/3 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 h-[600px] z-0">
-            <div id="leafletMap" class="w-full h-full rounded-xl z-0" wire:ignore></div>
+        <div class="w-full lg:w-2/3 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 h-[600px] relative">
+
+            <div x-show="isLoading" class="absolute inset-0 z-10 flex items-center justify-center bg-gray-50 rounded-xl">
+                <svg class="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+
+            <iframe
+                :src="mapUrl"
+                @load="isLoading = false"
+                class="w-full h-full rounded-xl z-0"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
 
     </div>
 
-    <!-- Alpine Leaflet logic -->
     @script
     <script>
         Alpine.data('mapController', () => ({
-            map: null,
-            markers: {},
             posts: [],
-            
+            // URL Default: Mengarah ke Desa Sidomukti Jember
+            mapUrl: 'https://maps.google.com/maps?q=Balai+Desa+Sidomukti,+Jember,+Jawa+Timur&t=&z=16&ie=UTF8&iwloc=&output=embed',
+            isLoading: true,
+            activePostId: null,
+
             init() {
                 this.posts = @json(json_decode($postsJson, true));
-                
-                // Initialize map if L is loaded
-                if (typeof L !== 'undefined') {
-                    this.initMap();
-                } else {
-                    console.error('Leaflet is not loaded');
-                }
-
-                // Listen for custom event from sidebar clicks
-                window.addEventListener('focus-post', (e) => {
-                    const postId = e.detail.id;
-                    if (this.markers[postId]) {
-                        this.map.setView(this.markers[postId].getLatLng(), 16);
-                        this.markers[postId].openPopup();
-                    }
-                });
             },
-            
-            initMap() {
-                // Default center to Sidomukti (approximation)
-                let centerLat = -6.839;
-                let centerLng = 111.777;
-                
-                if (this.posts.length > 0) {
-                    centerLat = this.posts[0].latitude;
-                    centerLng = this.posts[0].longitude;
+
+            focusPost(lat, lng, name) {
+                // Jika tidak ada koordinat, gunakan nama tempat + nama desa
+                if (!lat || !lng) {
+                    const query = encodeURIComponent(`${name}, Desa Sidomukti, Jember`);
+                    this.mapUrl = `https://maps.google.com/maps?q=${query}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+                } else {
+                    // Gunakan koordinat latitude & longitude yang ada di database
+                    this.mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
                 }
 
-                this.map = L.map('leafletMap').setView([centerLat, centerLng], 13);
+                this.isLoading = true; // Tampilkan loading spinner
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 20
-                }).addTo(this.map);
-
-                // Add markers
-                const bounds = [];
-                
-                this.posts.forEach(post => {
-                    if (post.latitude && post.longitude) {
-                        const marker = L.marker([post.latitude, post.longitude]).addTo(this.map);
-                        
-                        const popupContent = `
-                            <div class="px-2 py-1">
-                                <h3 class="font-bold text-gray-900 border-b pb-1 mb-1 font-heading">${post.name}</h3>
-                                <p class="text-sm text-gray-600 mb-2">${post.address}</p>
-                                <p class="text-xs text-brand font-semibold">PIC: ${post.pic_name}</p>
-                            </div>
-                        `;
-                        
-                        marker.bindPopup(popupContent);
-                        this.markers[post.id] = marker;
-                        bounds.push([post.latitude, post.longitude]);
-                    }
-                });
-
-                // Fit map to markers
-                if (bounds.length > 0) {
-                    this.map.fitBounds(bounds, { padding: [50, 50] });
-                }
+                // Cari id pos yang aktif untuk styling sidebar
+                const post = this.posts.find(p => p.latitude == lat && p.longitude == lng);
+                if(post) this.activePostId = post.id;
             }
         }));
     </script>
     @endscript
-
-    <div x-data="mapController"></div>
 </div>
